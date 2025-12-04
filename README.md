@@ -6,8 +6,7 @@ Some solutions for [Advent of Code, 2025](https://adventofcode.com/2025).
 The current ambitions are:
 
  * Have some fun
- * Keep pace, solve both parts of the daily puzzle on the day it is
-   posted.
+ * Keep pace, solve all 12 puzzles in 2025.
  * Set a time box of max 2 hours per day.
 
 Other self-imposed rules:
@@ -16,7 +15,7 @@ Other self-imposed rules:
    clean up is allowed). However, it is still allowed to _add_ alternative
    solutions or implementations in different languages.
  * The solution for each day should be self-contained. That is, it is
-   OK to use extra packages for a given language, but I don't want to
+   OK to use extra packages for a given language, but I **don't** want to
    make my own AoC library or framework used across all days.
 
 Practical setup
@@ -26,6 +25,9 @@ Practical setup
 
 Use the scripts from <https://github.com/kfl/adventofcode_utils> for
 the daily housekeeping chores.
+
+Get the content for the `session_cookie.txt` file by copying it from
+Firefox's cookie jar after logging in at <https://adventofcode.com>.
 
 Remember to encrypt `input.txt` so that they are not put in a public
 repository by accident. That is:
