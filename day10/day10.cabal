@@ -16,9 +16,7 @@ executable day10
                       containers,
                       ghc,
                       vector,
-                      hashable,
-                      psqueues,
-                      unordered-containers
+                      sbv
 
 
     hs-source-dirs:   .
