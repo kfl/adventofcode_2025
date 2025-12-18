@@ -47,30 +47,38 @@ allPairs xs = [ (x, y) | (x:ys) <- L.tails xs, y <- ys ]
 -- that is order preserving, thus we can use the following distance function
 distance ((x1, y1, z1), (x2, y2, z2)) = (x1 - x2)^2 + (y1 - y2)^2 + (z1 - z2)^2
 
+nubByM :: Monad m => (a -> a -> m Bool) -> [a] -> m [a]
+nubByM eq = go []
+  where
+    go seen = \case
+      [] -> pure $ reverse seen
+      x:xs -> do alreadySeen <- anyM (eq x) seen
+                 if alreadySeen then go seen xs else go (x:seen) xs
+
+anyM :: Monad m => (a -> m Bool) -> [a] -> m Bool
+anyM _ [] = pure False
+anyM p (x:xs) = p x >>= \b -> if b then pure True else anyM p xs
+
 connect n input = ST.runST $ do
-  counter <- newSTRef 0
-  pointSets <- traverse (\p -> (,) p <$> UF.newSet counter) input
+  pointSets <- forM input $ \p -> do s <- UF.newSet; return (p,s)
 
   let dists = L.sortOn snd [ ((s1, s2), distance (p1, p2))
                            | ((p1, s1), (p2, s2)) <- allPairs pointSets ]
 
-  forM_ (take n dists) $ \((s1, s2), _) -> UF.union s1 s2
+  forM_ (take n dists) $ uncurry UF.union . fst
 
-  roots <- forM (map snd pointSets) $ \s ->
-    (,) <$> UF.findRoot s <*> UF.size s
+  sizes <- mapM UF.size =<< nubByM UF.equal (map snd pointSets)
 
-  return $ L.sortOn Down $ map snd $ L.nubBy ((==) `on` fst) roots
+  return $ L.sortOn Down sizes
+
 
 part1 :: Input -> Int
 part1 input = product $ take 3 $ connect 1000 input
 answer1 = part1 <$> input
 
 
-
-
 fullConnect input = ST.runST $ do
-  counter <- newSTRef 0
-  pointSets <- forM input $ \p -> (,) p <$> UF.newSet counter
+  pointSets <- forM input $ \p -> do s <- UF.newSet; return (p,s)
 
   let dists = L.sortOn (\(d, _, _) -> d)
               [ (distance (p1, p2), (s1, s2), (p1, p2))
